@@ -214,13 +214,18 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                         </h3>
                                         
                                         {/* Dropdown Menu */}
-                                        <DropdownMenu>
+                                        <DropdownMenu modal={false}>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    className="h-8 w-8 shrink-0 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-md"
+                                                >
                                                     <MoreVertical className="h-5 w-5" />
+                                                    <span className="sr-only">More options</span>
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="w-48">
+                                            <DropdownMenuContent align="end" className="w-48 z-[9999]" sideOffset={5}>
                                                 <DropdownMenuItem onClick={() => handleViewClick(service)} className="cursor-pointer">
                                                     <Info className="w-4 h-4 mr-2" />
                                                     View Details

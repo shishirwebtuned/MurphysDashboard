@@ -164,6 +164,7 @@ const CreateAccountContent = () => {
         lastName: user?.lastName || '',
         email,
         password,
+        inviteToken: raw, // Include the invite token to get the correct role_type
       };
       await axiosInstance.post('/auth/register', payload);
       setMessageType('success');

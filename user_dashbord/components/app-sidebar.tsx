@@ -16,7 +16,6 @@ import {
 } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +26,7 @@ import {
 } from "@/components/ui/sidebar"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { NavUser } from "./nav-user"
 
 // This is sample data.
 const data = {
@@ -187,9 +187,8 @@ export function AppSidebar({ searchQuery = "", ...props }: AppSidebarProps) {
 
       {/* Fixed Footer */}
       <SidebarFooter className="p-4 bg-background">
-        <NavUser />
       </SidebarFooter>
-
+<NavUser showFull={true}/>
       <SidebarRail />
     </Sidebar>
   )

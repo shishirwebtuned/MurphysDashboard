@@ -495,12 +495,12 @@ export default function ServiceTable({ onEdit, categoryFilter = 'all' }: Service
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="h-8 w-8 p-0">
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="z-[9999]" sideOffset={5}>
 
                       <DropdownMenuItem
                         onClick={() => handleViewClick(service)}

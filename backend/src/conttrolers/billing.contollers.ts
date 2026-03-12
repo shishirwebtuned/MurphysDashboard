@@ -78,9 +78,6 @@ export const createPayPalOrder = async (req: AuthenticatedRequest, res: Response
 
         const accessToken = await getPayPalAccessToken();
 
-        const frontendUrl = process.env.frontendurl || 'http://localhost:3001/';
-        const baseUrl = frontendUrl.endsWith('/') ? frontendUrl.slice(0, -1) : frontendUrl;
-
         const orderPayload = {
             intent: 'CAPTURE',
             purchase_units: [
@@ -94,14 +91,6 @@ export const createPayPalOrder = async (req: AuthenticatedRequest, res: Response
                     custom_id: `${user.uid || ''}::${renewalId}::${assignServiceId}`,
                 },
             ],
-            application_context: {
-                return_url: `${baseUrl}/admin/billing`,
-                cancel_url: `${baseUrl}/admin/billing`,
-                brand_name: 'Murphy\'s Technology',
-                landing_page: 'NO_PREFERENCE',
-                user_action: 'PAY_NOW',
-                shipping_preference: 'NO_SHIPPING',
-            },
         };
 
         console.log('🔵 Creating PayPal order with payload:', JSON.stringify(orderPayload, null, 2));
@@ -368,7 +357,7 @@ export const getAdminBillingHistory = async (req: AuthenticatedRequest, res: Res
         const user = req.user;
         if (!user) {
             return res.status(401).json({ message: 'Unauthorized' });
-        }
+        }   
 
         const {
             status,

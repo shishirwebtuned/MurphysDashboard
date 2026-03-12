@@ -20,7 +20,7 @@ import { useToast } from '@/hooks/use-toast'
 import { PayPalScriptProvider, PayPalButtons, FUNDING } from '@paypal/react-paypal-js'
 import axiosInstance from '@/lib/axios'
 
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || 'AV_tVxQekwPqP4fz4bI8-CLDs7_cGnDV15R1Mlrc2ZlEUGnu2qoGL4SkfoR_sPotN6z7u8UM_BajzUPw';
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || 'AUSrmMjO6P_ugvW6zZXZn_Bfqm_xS_aOIRAd5mAuHlovy7Z5rY-lnF2E2gZtVTekkRBUPHvgB0jQEgC7';
 
 // --- PayPalPaymentModal Component ---
 function PayPalPaymentModal({
@@ -311,8 +311,6 @@ export default function BillingPage() {
         clientId: PAYPAL_CLIENT_ID,
         currency: 'AUD',
         intent: 'capture',
-        locale: 'en_AU',
-        disableFunding: 'card,credit,venmo,paylater',
       } as any}
     >
       <Page />

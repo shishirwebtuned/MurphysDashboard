@@ -169,9 +169,9 @@ function AdminUsersPage() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer ">
+                          <button  className="h-8 w-8 p-0 cursor-pointer ">
                             <MoreVertical className="h-4 w-4 rotate-90" />
-                          </Button>
+                          </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => { setSelectedUserDetails(admin); setShowDetailsDialog(true); }}>View</DropdownMenuItem>

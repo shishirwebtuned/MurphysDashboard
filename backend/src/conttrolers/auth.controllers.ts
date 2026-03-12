@@ -6,6 +6,7 @@ import transporter from "../config/nodemiller";
 import Auth from "../models/auth";
 import bcrypt  from "bcryptjs";
 import mongoose from "mongoose";
+import Invite from "../models/invite.model";
 
 export const registerUser = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
@@ -20,7 +21,8 @@ export const registerUser = async (req: Request, res: Response) => {
       phone,
       country,
       referralSource,
-      password
+      password,
+      inviteToken // Optional invite token
     } = req.body;
 
     if (!email || !firstName || !lastName || !password) {
@@ -32,6 +34,64 @@ export const registerUser = async (req: Request, res: Response) => {
     const existingAuth = await Auth.findOne({ email });
     if (existingAuth) {
       return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Default role and usertype
+    let role_type = "client user";
+    let usertypes = "client";
+    let inviteEmail = email;
+
+    // If invite token is provided, decode it and use the role_type from the invite
+    if (inviteToken) {
+      try {
+        const decoded = jwt.verify(inviteToken, process.env.JWT_SECRET as string) as any;
+        
+        // Verify that the token email matches the registration email
+        if (decoded.email !== email) {
+          await session.abortTransaction();
+          session.endSession();
+          return res.status(400).json({ 
+            message: "Invite token email does not match registration email" 
+          });
+        }
+
+        // Check if invite exists and is pending
+        const invite = await Invite.findOne({ 
+          email: decoded.email, 
+          invite_type: 'invite'
+        });
+
+        if (!invite) {
+          await session.abortTransaction();
+          session.endSession();
+          return res.status(404).json({ message: "Invite not found" });
+        }
+
+        if (invite.inviteStatus !== 'pending') {
+          await session.abortTransaction();
+          session.endSession();
+          return res.status(400).json({ 
+            message: `Invite has already been ${invite.inviteStatus}` 
+          });
+        }
+
+        // Use role_type from invite token or invite document
+        role_type = decoded.role_type || invite.role_type || "client user";
+        usertypes = role_type === "admin user" ? "admin" : "client";
+        inviteEmail = email;
+
+        // Mark invite as accepted
+        invite.inviteStatus = 'accepted';
+        await invite.save({ session });
+
+      } catch (error: any) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(400).json({ 
+          message: "Invalid or expired invite token",
+          error: error.message 
+        });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -51,9 +111,9 @@ export const registerUser = async (req: Request, res: Response) => {
         gender: gender || "",
         country: country || "Australia",
         referralSource: referralSource || "",
-        role_type: "client user",
+        role_type: role_type,
         status: "active",
-        usertypes: "client"
+        usertypes: usertypes
       }],
       { session }
     );
@@ -68,7 +128,8 @@ export const registerUser = async (req: Request, res: Response) => {
         id: profile[0]._id,
         firstName: profile[0].firstName,
         lastName: profile[0].lastName,
-        email: profile[0].email
+        email: profile[0].email,
+        role_type: profile[0].role_type
       }
     });
 
