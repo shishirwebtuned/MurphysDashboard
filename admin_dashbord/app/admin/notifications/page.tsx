@@ -284,7 +284,7 @@ const NotificationsPage = () => {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="text-destructive focus:text-destructive">
                                                         {/* Note: Delete logic is usually handled by the parent or a separate handler passed to modal */}
-                                                        <Trash2 />    Delete
+                                                        {/* <Trash2 />    Delete */}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

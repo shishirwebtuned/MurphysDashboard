@@ -65,8 +65,8 @@ function DeleteModel({ onsuccess, deleteId, isOpen, onClose, title, description,
                     </DialogDescription>
                 </DialogHeader>
                 <div className="mt-4 flex justify-end gap-2">
-                    <Button  variant="secondary" onClick={handleCancel}>Cancel</Button>
-                    <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                    <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
+                    <Button variant="destructive" onClick={handleDelete}>Confirm</Button>
                 </div>
             </DialogContent>
         </Dialog>
