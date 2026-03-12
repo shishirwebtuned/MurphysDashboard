@@ -119,7 +119,7 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
             </button>
             
             <div className="h-px bg-slate-100 dark:bg-white/5 my-1" />
-
+ 
             <button 
               onClick={() => { setShowLogoutDialog(true); setIsOpen(false); }}
               className="flex items-center w-full gap-3 px-2 py-2 sm:px-3 sm:py-2 text-xs sm:text-sm text-red-500 rounded-md hover:bg-red-50 dark:hover:bg-red-900/10"
