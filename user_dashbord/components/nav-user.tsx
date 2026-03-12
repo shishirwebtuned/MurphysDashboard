@@ -12,6 +12,16 @@ import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks"
 import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import { getMee } from "@/lib/redux/slices/meeSlice"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolean; dropUp?: boolean }) {
   const router = useRouter()
@@ -109,7 +119,7 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
             </button>
             
             <div className="h-px bg-slate-100 dark:bg-white/5 my-1" />
-
+ 
             <button 
               onClick={() => { setShowLogoutDialog(true); setIsOpen(false); }}
               className="flex items-center w-full gap-3 px-2 py-2 sm:px-3 sm:py-2 text-xs sm:text-sm text-red-500 rounded-md hover:bg-red-50 dark:hover:bg-red-900/10"
@@ -123,29 +133,25 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
         </div>
       )}
 
-      {/* Manual Logout Confirmation Modal */}
-      {showLogoutDialog && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 rounded-xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-white/10">
-            <h3 className="text-lg font-bold">Are you absolutely sure?</h3>
-            <p className="text-sm text-slate-500 mt-2">This will permanently log you out of your session.</p>
-            <div className="flex justify-end gap-3 mt-6">
-              <button 
-                onClick={() => setShowLogoutDialog(false)}
-                className="px-4 py-2 text-sm font-medium border border-slate-200 dark:border-white/10 rounded-lg hover:bg-slate-100"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700"
-              >
-                Log out
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will log you out of your current session.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Log out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -172,11 +172,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [searchQuery])
 
   return (
-    <Sidebar collapsible="icon" {...props} className=" text-white">
+    <Sidebar collapsible="icon" {...props} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
   
 
       {/* Fixed Header */}
-      <SidebarHeader className=" backdrop-blur-xl pb-4">
+      <SidebarHeader className="bg-white dark:bg-slate-900/50 backdrop-blur-xl pb-4">
         <motion.div
           className="flex h-14 items-center px-4 pt-2"
           animate={{
@@ -281,7 +281,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       {/* Fixed Footer */}
-      <SidebarFooter className=" p-2 mt-auto">
+      <SidebarFooter className="bg-white dark:bg-slate-900/50 p-2 mt-auto border-t border-slate-200 dark:border-slate-700">
         <NavUser />
       </SidebarFooter>
 
