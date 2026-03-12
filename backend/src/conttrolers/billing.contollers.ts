@@ -368,7 +368,6 @@ export const getAdminBillingHistory = async (req: AuthenticatedRequest, res: Res
             limit = 10
         } = req.query;
 
-        // Build query for al
         const query: any = {};
 
         // Filter by specific client if provided
