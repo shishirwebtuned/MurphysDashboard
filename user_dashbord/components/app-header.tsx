@@ -1,5 +1,4 @@
 "use client"
-
 import * as React from "react"
 import { Search, Bell, Settings, Moon, Sun, Menu } from "lucide-react"
 import { useTheme } from "next-themes"
@@ -178,7 +177,7 @@ export function AppHeader({ onSearchChange, searchValue }: AppHeaderProps) {
           </DropdownMenu>
 
           {/* User Menu */}
-          <NavUser />
+          <NavUser showFull={false} dropUp={false} />
         </div>
 
         {/* Mobile Search Overlay */}

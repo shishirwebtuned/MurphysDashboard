@@ -45,12 +45,14 @@ export const sendInvite = async (req: Request, res: Response) => {
 
     await invite.save();
 
-    // Generate token
+    // Generate token with role_type included
     const token = jwt.sign(
-      { email,
+      { 
+        email,
         firstName,
-        lastName
-       },
+        lastName,
+        role_type
+      },
       process.env.JWT_SECRET as string,
       { expiresIn: "5d" }
     );
@@ -234,10 +236,12 @@ export  const inviteAgain = async (req: Request, res: Response) => {
     const lastName = invite.lastName;
     const role_type = invite.role_type;
     const token = jwt.sign(
-      { email,
+      { 
+        email,
         firstName,
         lastName,
-       },
+        role_type
+      },
       process.env.JWT_SECRET as string,
       { expiresIn: '5d' }
     );

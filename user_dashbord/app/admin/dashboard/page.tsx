@@ -156,7 +156,7 @@ export default function Page() {
       />
       {/* User banner card */}
       {profile && (
-        <div className=" mx-auto px-4 md:px-0">
+        <div className="  ">
           <div className=" rounded-lg overflow-hidden border-0">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white flex items-center gap-4">
               <Avatar className="h-16 w-16">
