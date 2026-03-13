@@ -2,6 +2,7 @@ import Profile from "../models/profile.model";
 import { Request, Response } from "express";
 import { AuthenticatedRequest } from "../middleware/auth";
 import transporter from "../config/nodemiller";
+import Auth  from "../models/auth"
 
 
 
@@ -475,6 +476,31 @@ export const getUserPermissions = async (req: Request, res: Response) => {
         allPermissions
       },
       message: 'User permissions retrieved successfully'
+    });
+  } catch (error) {
+    res.status(400).json({ message: (error as Error).message });
+  }
+};
+
+
+
+export const deleteProfile = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const profile = await Profile.findByIdAndDelete(id);
+
+    if (!profile) {
+      return res.status(404).json({ message: 'Profile not found' });
+    }
+
+    // Also delete the associated auth document
+    if (profile.email) {
+      await Auth.findOneAndDelete({ email: profile.email });
+    }
+
+    res.status(200).json({
+      data: profile,
+      message: 'Profile and associated authentication data deleted successfully'
     });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });

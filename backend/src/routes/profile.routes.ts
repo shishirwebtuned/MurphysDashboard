@@ -10,12 +10,13 @@ import {
   toggleUserPermission,
   updateUserRole,
   updateUserStatus,
-  getUserPermissions
+  getUserPermissions,
+  deleteProfile
 } from "../conttrolers/profile.conttrolers";
 import upload from "../middleware/upload";
 import cloudinaryUpload from "../middleware/cloudinaryUpload";
 import { verifyToken } from "../middleware/auth";
-// import { isAdmin, isOwnerOrAdmin, checkPermission, Permission } from "../middleware/rbac";
+import { isAdmin  } from "../middleware/rbac";
 
 const profilerouter = Router();
 
@@ -35,5 +36,7 @@ profilerouter.post("/profiles/permissions/toggle", verifyToken, toggleUserPermis
 profilerouter.post("/profiles/permissions/role", verifyToken, updateUserRole);
 profilerouter.post("/profiles/permissions/status", verifyToken, updateUserStatus);
 profilerouter.get("/profiles/permissions/:userId", verifyToken, getUserPermissions);
+profilerouter.delete("/profiles/:id", verifyToken, isAdmin, deleteProfile);
+profilerouter.delete("/users/:id", verifyToken, isAdmin, deleteProfile);
 
 export default profilerouter;   

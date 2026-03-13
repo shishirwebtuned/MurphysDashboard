@@ -108,7 +108,7 @@ const data = {
   )}
 </Link>
 
-                <NavUser />
+                <NavUser dropUp={false} />
             <ModeToggle />
           </div>
         </header>

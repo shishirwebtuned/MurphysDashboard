@@ -67,13 +67,6 @@ export const registerUser = async (req: Request, res: Response) => {
           return res.status(404).json({ message: "Invite not found" });
         }
 
-        if (invite.inviteStatus !== 'pending') {
-          await session.abortTransaction();
-          session.endSession();
-          return res.status(400).json({ 
-            message: `Invite has already been ${invite.inviteStatus}` 
-          });
-        }
 
         // Use role_type from invite token or invite document
         role_type = decoded.role_type || invite.role_type || "client user";
