@@ -754,7 +754,7 @@ export default function LoginPage() {
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
 
       setMood("neutral");
-      router.push("/admin/dashboard");
+      router.push("/user/dashboard");
     } catch (err: unknown) {
       setMood("sad");
       if (

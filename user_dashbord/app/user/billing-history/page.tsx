@@ -366,7 +366,7 @@ function BillingHistoryPage() {
       setLoading(true);
       const axiosInstance = (await import('@/lib/axios')).default;
 
-      await axiosInstance.delete(`/billing/admin/history/${selectedItemForDelete}`);
+      await axiosInstance.delete(`/billing/user/history/${selectedItemForDelete}`);
 
       toast({
         title: 'Success',

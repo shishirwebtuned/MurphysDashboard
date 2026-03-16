@@ -14,7 +14,7 @@ import {
   MapPin,
   CheckCircle2,
 } from 'lucide-react';
-import { motion,  } from 'framer-motion';
+import { motion, } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { updateProfile, clearUpdateSuccess, fetchProfileByEmail, createProfile } from '@/lib/redux/slices/profileSlice';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Form, FormControl,  FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
@@ -78,12 +78,10 @@ export default function ProfileUpdateForm() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [dobOpen, setDobOpen] = useState(false);
   const [dojOpen, setDojOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [dojDate, setDojDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     if (meeData?.email)
-       dispatch(fetchProfileByEmail(meeData.email));
+      dispatch(fetchProfileByEmail(meeData.email));
   }, [dispatch, meeData?.email]);
 
   useEffect(() => {
@@ -99,8 +97,8 @@ export default function ProfileUpdateForm() {
       email: '',
       phone: '',
       gender: '',
-      dob: '',
-      doj: '',
+      dob: undefined,
+      doj: undefined,
       bio: '',
       website: '',
       country: '',
@@ -119,8 +117,8 @@ export default function ProfileUpdateForm() {
         email: meeData?.email || pd.email || '',
         phone: pd.phone || '',
         gender: pd.gender || '',
-        dob: pd.dob || '',
-        doj: pd.doj || '',
+        dob: pd.dob ? new Date(pd.dob).toISOString().split('T')[0] : undefined,
+        doj: pd.doj ? new Date(pd.doj).toISOString().split('T')[0] : undefined,
         bio: pd.bio || '',
         website: pd.website || '',
         country: pd.country || '',
@@ -129,8 +127,7 @@ export default function ProfileUpdateForm() {
         position: pd.position || '',
       });
       if (data.profile_image) setImagePreview(data.profile_image);
-      if (pd.dob) setDate(new Date(pd.dob));
-      if (pd.doj) setDojDate(new Date(pd.doj));
+
     }
   }, [data, meeData, form]);
 
@@ -326,33 +323,50 @@ export default function ProfileUpdateForm() {
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
                             <FormLabel>Date of Birth</FormLabel>
+
                             <Popover open={dobOpen} onOpenChange={setDobOpen}>
                               <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button variant="outline" className={cn("justify-between font-normal bg-muted/50 ", !date && "text-muted-foreground")}>
-                                    {date ? format(date, "PPP") : "Select date"}
-                                    <CalendarIcon className="w-4 h-4 ml-2 opacity-50" />
-                                  </Button>
-                                </FormControl>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className={cn(
+                                    "justify-between font-normal bg-muted/50",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value && !isNaN(new Date(field.value).getTime())
+                                    ? format(new Date(field.value), "PPP")
+                                    : "Select date"}
+                                  <CalendarIcon className="w-4 h-4 ml-2 opacity-50" />
+                                </Button>
                               </PopoverTrigger>
+
                               <PopoverContent className="w-auto p-0" align="start">
                                 <Calendar
                                   mode="single"
-                                  selected={date}
+                                  captionLayout="dropdown"
+                                  fromYear={1940}
+                                  toYear={new Date().getFullYear() - 17}
+                                  defaultMonth={field.value ? new Date(field.value) : new Date(2000, 0)}
+                                  selected={field.value ? new Date(field.value) : undefined}
                                   onSelect={(d) => {
-                                    setDate(d);
-                                    if (d) field.onChange(d.toISOString().split('T')[0]);
-                                    setDobOpen(false);
+                                    if (d) {
+                                      field.onChange(d.toISOString().split("T")[0]);
+                                      setDobOpen(false);
+                                    }
                                   }}
                                   disabled={(d) => d > new Date() || d < new Date("1900-01-01")}
                                   initialFocus
                                 />
                               </PopoverContent>
                             </Popover>
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+
+
                     </div>
                   </motion.div>
 
@@ -387,29 +401,44 @@ export default function ProfileUpdateForm() {
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
                             <FormLabel>Join Date</FormLabel>
+
                             <Popover open={dojOpen} onOpenChange={setDojOpen}>
                               <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button variant="outline" className={cn("justify-between font-normal bg-muted/50 ", !dojDate && "text-muted-foreground")}>
-                                    {dojDate ? format(dojDate, "PPP") : "Select date"}
-                                    <CalendarIcon className="w-4 h-4 ml-2 opacity-50" />
-                                  </Button>
-                                </FormControl>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className={cn(
+                                    "justify-between font-normal bg-muted/50",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value && !isNaN(new Date(field.value).getTime())
+                                    ? format(new Date(field.value), "PPP")
+                                    : "Select date"}
+                                  <CalendarIcon className="w-4 h-4 ml-2 opacity-50" />
+                                </Button>
                               </PopoverTrigger>
+
                               <PopoverContent className="w-auto p-0" align="start">
                                 <Calendar
                                   mode="single"
-                                  selected={dojDate}
+                                  captionLayout="dropdown"
+                                  fromYear={1990}
+                                  toYear={new Date().getFullYear()}
+                                  defaultMonth={field.value ? new Date(field.value) : new Date()}
+                                  selected={field.value ? new Date(field.value) : undefined}
                                   onSelect={(d) => {
-                                    setDojDate(d);
-                                    if (d) field.onChange(d.toISOString().split('T')[0]);
-                                    setDojOpen(false);
+                                    if (d) {
+                                      field.onChange(d.toISOString().split("T")[0]);
+                                      setDojOpen(false);
+                                    }
                                   }}
                                   disabled={(d) => d > new Date()}
                                   initialFocus
                                 />
                               </PopoverContent>
                             </Popover>
+
                             <FormMessage />
                           </FormItem>
                         )}

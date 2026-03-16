@@ -46,20 +46,20 @@ function page() {
   const router = useRouter();
   const [data, setData] = React.useState<any>(null);
   const dispatch = useAppDispatch();
-  const {services , loading } = useAppSelector((state) => state.services);
+  const { services, loading } = useAppSelector((state) => state.services);
 
   console.log('Services from Redux:', services);
-  
+
   // FIX: Handle the nested array structure
   // Access the actual services array - it could be services[0] or services.services
   const servicesList = React.useMemo(() => {
     if (!services) return [];
-    
+
     // If services is an array with nested array structure
     if (Array.isArray(services) && services.length > 0 && Array.isArray(services[0])) {
       return services[0];
     }
-    
+
     // If services is an object wrapping the array (e.g. { services: [...] })
     if (
       services &&
@@ -70,12 +70,12 @@ function page() {
     ) {
       return (services as any).services as any[];
     }
-    
+
     // If services is already a flat array
     if (Array.isArray(services)) {
       return services;
     }
-    
+
     return [];
   }, [services]);
 
@@ -94,7 +94,7 @@ function page() {
   const [assignAutoInvoice, setAssignAutoInvoice] = React.useState<boolean>(false);
   const [assignNotes, setAssignNotes] = React.useState<string>('');
   const [assignEndDate, setAssignEndDate] = React.useState<string | null>(null);
-  
+
   const handleAssignSubmit = async () => {
     // Validate required fields
     if (!selectedClient) {
@@ -132,11 +132,11 @@ function page() {
 
       const response = await dispatch(assignServiceToClient(payload)).unwrap();
       if (response) {
-        router.push('/admin/view_assign_service');
+        router.push('/user/view_assign_service');
       }
       // Success handling (axios interceptor will show toast)
     } catch (error) {
-      console.error('Error assigning service:', error); 
+      console.error('Error assigning service:', error);
       // Error toast shown by axios interceptor
     }
   };
@@ -188,113 +188,113 @@ function page() {
           <Header
             title="Assign Service"
             description="Assign services to clients"
-            link="/admin/get_all_users"
+            link="/user/get_all_users"
             linkText="Go to users list"
           />
 
           <div className="max-w-2xl mx-auto p-6 bg-card rounded-lg shadow-lg border">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold">Assign Service to Client</h2>
-          <p className="text-muted-foreground">Fill details for assigning this service to a client</p>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <Label className=' pb-2'>Client</Label>
-            <div className="p-2 bg-muted rounded">
-              {data ? `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email || 'Client' : 'Loading...'}
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold">Assign Service to Client</h2>
+              <p className="text-muted-foreground">Fill details for assigning this service to a client</p>
             </div>
-          </div>
+            <div className="space-y-4">
+              <div>
+                <Label className=' pb-2'>Client</Label>
+                <div className="p-2 bg-muted rounded">
+                  {data ? `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email || 'Client' : 'Loading...'}
+                </div>
+              </div>
 
-          <div className="mt-3">
-            <Label className=' pb-2'>Service</Label>
-            <Select value={selectedService || ''} onValueChange={(v) => setSelectedService(v || null)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a service">
-                  {selectedServiceName || undefined}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {servicesList && servicesList.length > 0 ? (
-                  servicesList.map((service: any) => (
-                    <SelectItem key={service._id || service.id} value={service._id || service.id}>
-                      <div className="flex justify-between w-full">
-                        <span className="truncate">{service.name}</span>
-                        <span className="text-sm text-muted-foreground">{service.price != null ? `${service.price} ${service.currency || ''}` : ''}</span>
+              <div className="mt-3">
+                <Label className=' pb-2'>Service</Label>
+                <Select value={selectedService || ''} onValueChange={(v) => setSelectedService(v || null)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a service">
+                      {selectedServiceName || undefined}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {servicesList && servicesList.length > 0 ? (
+                      servicesList.map((service: any) => (
+                        <SelectItem key={service._id || service.id} value={service._id || service.id}>
+                          <div className="flex justify-between w-full">
+                            <span className="truncate">{service.name}</span>
+                            <span className="text-sm text-muted-foreground">{service.price != null ? `${service.price} ${service.currency || ''}` : ''}</span>
+                          </div>
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                        No services available
                       </div>
-                    </SelectItem>
-                  ))
-                ) : (
-                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                    No services available
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className=' pb-2'>Status</Label>
+                  <Select value={assignStatus} onValueChange={(v) => setAssignStatus(v as any)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="paused">Paused</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className=' pb-2'>Cycle</Label>
+                  <Select value={assignCycle} onValueChange={(v) => setAssignCycle(v as any)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="annual">Annual</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label className=' pb-2'>Start / End date</Label>
+                <DateRangePicker
+                  value={{ from: assignStartDate || null, to: assignEndDate || null }}
+                  onChange={(v) => {
+                    setAssignStartDate(v.from || '');
+                    setAssignEndDate(v.to || null);
+                  }}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className=' pb-2'>Price (override)</Label>
+                  <Input type="number" value={assignPrice ?? ''} onChange={(e) => setAssignPrice(e.target.value ? Number(e.target.value) : undefined)} />
+                </div>
+                <div className="flex flex-col">
+                  <Label className=' pb-2'>Auto invoice</Label>
+                  <div className="mt-2">
+                    <Switch checked={assignAutoInvoice} onCheckedChange={(v) => setAssignAutoInvoice(Boolean(v))} />
                   </div>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className=' pb-2'>Status</Label>
-              <Select value={assignStatus} onValueChange={(v) => setAssignStatus(v as any)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                </div>
+              </div>
 
-            <div>
-              <Label className=' pb-2'>Cycle</Label>
-              <Select value={assignCycle} onValueChange={(v) => setAssignCycle(v as any)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="annual">Annual</SelectItem>
-                  <SelectItem value="none">None</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+              <div>
+                <Label className=' pb-2'>Notes (internal)</Label>
+                <Textarea value={assignNotes} onChange={(e) => setAssignNotes(e.target.value)} />
+              </div>
 
-          <div>
-            <Label className=' pb-2'>Start / End date</Label>
-            <DateRangePicker
-              value={{ from: assignStartDate || null, to: assignEndDate || null }}
-              onChange={(v) => {
-                setAssignStartDate(v.from || '');
-                setAssignEndDate(v.to || null);
-              }}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className=' pb-2'>Price (override)</Label>
-              <Input type="number" value={assignPrice ?? ''} onChange={(e) => setAssignPrice(e.target.value ? Number(e.target.value) : undefined)} />
-            </div>
-            <div className="flex flex-col">
-              <Label className=' pb-2'>Auto invoice</Label>
-              <div className="mt-2">
-                <Switch checked={assignAutoInvoice} onCheckedChange={(v) => setAssignAutoInvoice(Boolean(v))} />
+              <div className="flex items-center justify-end gap-2">
+                <Button onClick={handleAssignSubmit}>Assign</Button>
               </div>
             </div>
-          </div>
-
-          <div>
-            <Label className=' pb-2'>Notes (internal)</Label>
-            <Textarea value={assignNotes} onChange={(e) => setAssignNotes(e.target.value)} />
-          </div>
-
-          <div className="flex items-center justify-end gap-2">
-            <Button onClick={handleAssignSubmit}>Assign</Button>
-          </div>
-        </div>
           </div>
         </>
       )}

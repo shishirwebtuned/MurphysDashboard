@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks'
 import { fetchTickets, deleteTicket } from '@/lib/redux/slices/ticketSlice'
 import Header from '@/app/page/common/header'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent,  CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -46,8 +46,8 @@ export default function OpenTicketPage() {
 
 
   useEffect(() => {
-        dispatch(fetchTickets())
-   
+    dispatch(fetchTickets())
+
   }, [dispatch,])
 
   const handleDelete = async () => {
@@ -112,7 +112,7 @@ export default function OpenTicketPage() {
         title="Support Tickets"
         description="Manage your service support tickets"
         buttonText="Create Ticket"
-        onButtonClick={() => router.push('/admin/open_ticket/create')}
+        onButtonClick={() => router.push('/user/open_ticket/create')}
         total={total}
         icon={<Plus className="h-6 w-6" />}
       />
@@ -187,7 +187,7 @@ export default function OpenTicketPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                <TableHead>Image</TableHead>
+                  <TableHead>Image</TableHead>
                   <TableHead>Service</TableHead>
                   <TableHead>Problem Type</TableHead>
                   <TableHead>Priority</TableHead>
@@ -215,10 +215,10 @@ export default function OpenTicketPage() {
                         </div>
                         <p className="text-lg font-semibold mt-2">No tickets yet</p>
                         <p className="text-sm text-muted-foreground">Create your first ticket to get help from our support team</p>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           className="mt-3 bg-indigo-600 hover:bg-indigo-700 text-white"
-                          onClick={() => router.push('/admin/open_ticket/create')}
+                          onClick={() => router.push('/user/open_ticket/create')}
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Create Ticket
@@ -232,9 +232,9 @@ export default function OpenTicketPage() {
                       <TableCell>{ticket.images && ticket.images.length > 0 ? <img src={ticket.images[0]} alt="Ticket" className="h-10 w-10 rounded-md object-cover" /> : <div className="h-8 w-8 rounded-md bg-gray-200 dark:bg-gray-700 flex items-center justify-center"><TicketIcon className="h-4 w-4 text-gray-500" /></div>}</TableCell>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                                <TicketIcon className="h-4 w-4 text-blue-600" />
-                              </div>
+                          <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+                            <TicketIcon className="h-4 w-4 text-blue-600" />
+                          </div>
                           <span className="truncate max-w-[200px]">{ticket.assignedServiceName}</span>
                         </div>
                       </TableCell>
@@ -256,40 +256,40 @@ export default function OpenTicketPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 cursor-pointer" onClick={() => router.push(`/admin/open_ticket/${ticket._id}`)}>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 cursor-pointer" onClick={() => router.push(`/user/open_ticket/${ticket._id}`)}>
                             <Eye className="h-4 w-4" />
                           </Button>
                           <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 cursor-pointer">
-                              <MoreVertical className="h-4 w-4 rotate-90" />
-                              <span className="sr-only">Actions</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-[160px]">
-                            <DropdownMenuItem
-                              onClick={() => router.push(`/admin/open_ticket/${ticket._id}`)}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => router.push(`/admin/open_ticket/${ticket._id}?edit=true`)}
-                            >
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-blue-600 focus:text-blue-700"
-                              onClick={() => {
-                                setTicketToDelete(ticket)
-                                setDeleteDialogOpen(true)
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 cursor-pointer">
+                                <MoreVertical className="h-4 w-4 rotate-90" />
+                                <span className="sr-only">Actions</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-[160px]">
+                              <DropdownMenuItem
+                                onClick={() => router.push(`/user/open_ticket/${ticket._id}`)}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => router.push(`/user/open_ticket/${ticket._id}?edit=true`)}
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-blue-600 focus:text-blue-700"
+                                onClick={() => {
+                                  setTicketToDelete(ticket)
+                                  setDeleteDialogOpen(true)
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -302,7 +302,7 @@ export default function OpenTicketPage() {
       </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-blue-600" />

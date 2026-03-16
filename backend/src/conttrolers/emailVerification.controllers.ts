@@ -14,31 +14,32 @@ export const sendVerificationEmail = async (req: Request, res: Response) => {
     // Check if email already exists
     const existingAuth = await Auth.findOne({ email });
     if (existingAuth) {
-      return res.status(409).json({ 
-        message: "This email is already registered. Please login instead." 
+      return res.status(409).json({
+        message: "This email is already registered. Please login instead.",
       });
     }
 
     // Generate email verification token
     const verificationToken = jwt.sign(
-      { 
+      {
         email,
-        firstName: firstName || '',
-        lastName: lastName || '',
-        step: 'email-verification'
+        firstName: firstName || "",
+        lastName: lastName || "",
+        step: "email-verification",
       },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '1h' } // 1 hour for email verification
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "1h" }, // 1 hour for email verification
     );
 
+    const frontendUrl = process.env.USER_FRONTEND_URL;
     // Send verification email
-    const verificationUrl = `${process.env.frontendurl || 'http://localhost:3000'}complete-registration?token=${verificationToken}`;
-    
+    const verificationUrl = `${frontendUrl || "http://localhost:3000"}complete-registration?token=${verificationToken}`;
+
     const mailOptions = {
-  from: process.env.EMAIL_FROM || process.env.SMTP_USER,
-  to: email,
-  subject: "Verify Your Email to Complete Registration",
-  html: `
+      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+      to: email,
+      subject: "Verify Your Email to Complete Registration",
+      html: `
     <!DOCTYPE html>
     <html>
     <head>
@@ -124,24 +125,22 @@ export const sendVerificationEmail = async (req: Request, res: Response) => {
       </div>
     </body>
     </html>
-  `
-};
-
+  `,
+    };
 
     await transporter.sendMail(mailOptions);
 
     res.status(200).json({
       success: true,
       message: "Verification email sent! Please check your inbox.",
-      email
+      email,
     });
-
   } catch (error: any) {
     console.error("Send verification email error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: "Failed to send verification email", 
-      error: error.message 
+      message: "Failed to send verification email",
+      error: error.message,
     });
   }
 };
@@ -157,16 +156,16 @@ export const verifyTokenSS = async (req: Request, res: Response) => {
     // Verify JWT token
     const decoded = jwt.verify(
       token as string,
-      process.env.JWT_SECRET || 'your-secret-key'
+      process.env.JWT_SECRET || "your-secret-key",
     ) as { email: string; firstName?: string; lastName?: string; step: string };
 
     // Check if email already registered
     const existingAuth = await Auth.findOne({ email: decoded.email });
     if (existingAuth) {
-      return res.status(409).json({ 
+      return res.status(409).json({
         success: false,
         message: "This email is already registered. Please login instead.",
-        alreadyRegistered: true
+        alreadyRegistered: true,
       });
     }
 
@@ -176,31 +175,31 @@ export const verifyTokenSS = async (req: Request, res: Response) => {
       data: {
         email: decoded.email,
         firstName: decoded.firstName,
-        lastName: decoded.lastName
-      }
+        lastName: decoded.lastName,
+      },
     });
-
   } catch (error: any) {
     console.error("Verify token error:", error);
-    
-    if (error.name === 'TokenExpiredError') {
-      return res.status(400).json({ 
+
+    if (error.name === "TokenExpiredError") {
+      return res.status(400).json({
         success: false,
-        message: "Verification link has expired. Please start registration again." 
-      });
-    }
-    
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(400).json({ 
-        success: false,
-        message: "Invalid verification token." 
+        message:
+          "Verification link has expired. Please start registration again.",
       });
     }
 
-    res.status(500).json({ 
+    if (error.name === "JsonWebTokenError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid verification token.",
+      });
+    }
+
+    res.status(500).json({
       success: false,
-      message: "Token verification failed", 
-      error: error.message 
+      message: "Token verification failed",
+      error: error.message,
     });
   }
 };

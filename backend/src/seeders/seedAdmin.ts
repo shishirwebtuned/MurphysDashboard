@@ -7,8 +7,8 @@ import mongoose from "mongoose";
 dotenv.config();
 
 export const seedAdminUser = async () => {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminEmail = process.env.TESTADMIN_EMAIL;
+  const adminPassword = process.env.TESTADMIN_PASSWORD;
 
   if (!adminEmail || !adminPassword) {
     throw new Error(
@@ -23,7 +23,7 @@ export const seedAdminUser = async () => {
     // Check if admin already exists
     const existingAuth = await Auth.findOne({ email: adminEmail });
     if (existingAuth) {
-      console.log("ℹ️ Admin user already exists:", adminEmail);
+      console.log("ℹ️Test Admin user already exists:", adminEmail);
       await session.endSession();
       return;
     }
@@ -53,7 +53,7 @@ export const seedAdminUser = async () => {
     );
 
     await session.commitTransaction();
-    console.log("✅ Admin user seeded successfully:", adminEmail);
+    console.log("✅Test Admin user seeded successfully:", adminEmail);
   } catch (error: any) {
     await session.abortTransaction();
     throw new Error(`❌ Failed to seed admin user: ${error.message}`);

@@ -46,57 +46,57 @@ const data = {
   projects: [
     {
       name: "Dashboard",
-      url: "/admin/dashboard",
+      url: "/user/dashboard",
       icon: LayoutDashboard,
     },
     {
       name: "Services",
-      url: "/admin/services",
+      url: "/user/services",
       icon: Briefcase,
     },
     {
       name: "My Services",
-      url: "/admin/view_assign_service",
+      url: "/user/view_assign_service",
       icon: Package,
     },
     {
       name: "Cart",
-      url: "/admin/cart",
+      url: "/user/cart",
       icon: ShoppingCart,
     },
     {
       name: "Contracts",
-      url: "/admin/contract_messages",
+      url: "/user/contract_messages",
       icon: BookOpen,
     },
     {
       name: "Payment ",
-      url: "/admin/billing",
+      url: "/user/billing",
       icon: CreditCard,
     },
     {
       name: "Payment History",
-      url: "/admin/billing-history",
+      url: "/user/billing-history",
       icon: CreditCard,
     },
     {
       name: "Support Tickets",
-      url: "/admin/open_ticket",
+      url: "/user/open_ticket",
       icon: Ticket,
     },
     {
       name: "Invite Users",
-      url: "/admin/invte_users",
+      url: "/user/invte_users",
       icon: UserPlus,
     },
     {
       name: "Invoices",
-      url: "/admin/invoices",
+      url: "/user/invoices",
       icon: FileText,
     },
     {
       name: "Profile",
-      url: "/admin/profile",
+      url: "/user/profile",
       icon: User,
     },
   ],
@@ -188,7 +188,7 @@ export function AppSidebar({ searchQuery = "", ...props }: AppSidebarProps) {
       {/* Fixed Footer */}
       <SidebarFooter className="p-4 bg-background">
       </SidebarFooter>
-<NavUser showFull={true}/>
+      <NavUser showFull={true} />
       <SidebarRail />
     </Sidebar>
   )

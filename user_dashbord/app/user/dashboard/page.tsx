@@ -103,7 +103,7 @@ export default function Page() {
       color: 'text-blue-500',
       bgGradient: 'bg-gradient-to-br from-blue-500 to-indigo-500',
       borderColor: 'border-l-blue-500',
-      link: '/admin/billing'
+      link: '/user/billing'
     },
     {
       title: "Next Due",
@@ -124,7 +124,7 @@ export default function Page() {
       color: 'text-amber-500',
       bgGradient: 'bg-gradient-to-br from-amber-400 to-amber-600',
       borderColor: 'border-l-amber-500',
-      link: '/admin/billing'
+      link: '/user/billing'
     },
     {
       title: "Active Services",
@@ -134,7 +134,7 @@ export default function Page() {
       color: 'text-green-500',
       bgGradient: 'bg-gradient-to-br from-green-400 to-green-600',
       borderColor: 'border-l-green-500',
-      link: '/admin/view_assign_service'
+      link: '/user/view_assign_service'
     },
     {
       title: "Unpaid Invoices",
@@ -144,7 +144,7 @@ export default function Page() {
       color: 'text-red-500',
       bgGradient: 'bg-gradient-to-br from-red-500 to-pink-600',
       borderColor: 'border-l-red-500',
-      link: '/admin/billing'
+      link: '/user/billing'
     },
   ];
 
@@ -173,7 +173,7 @@ export default function Page() {
                 <p className="text-sm opacity-90">{profile.email}</p>
               </div>
               <div className="hidden md:block ml-4">
-                <Link href="/admin/profile">
+                <Link href="/user/profile">
                   <Button className="cursor-pointer hover:bg-white bg-white px-6"><span className='text-blue-500'>View Profile</span></Button>
                 </Link>
               </div>
@@ -201,7 +201,7 @@ export default function Page() {
                 </AlertDescription>
               </div>
             </div>
-            <Link href="/admin/billing" className='mr-4'>
+            <Link href="/user/billing" className='mr-4'>
               <Button className="bg-red-600 cursor-pointer hover:bg-red-700 text-white px-6">
                 Pay Now
               </Button>
@@ -239,7 +239,7 @@ export default function Page() {
             <CardContent className="">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold ">Recent Invoices</h2>
-                <Link href="/admin/billing-history">
+                <Link href="/user/billing-history">
                   <Button variant="link" className="text-blue-600 cursor-pointer text-sm">View All</Button>
                 </Link>
               </div>
@@ -290,7 +290,7 @@ export default function Page() {
             <CardContent className="">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold ">Active Services</h2>
-                <Link href="/admin/view_assign_service">
+                <Link href="/user/view_assign_service">
                   <Button variant="link" className="text-blue-600 cursor-pointer text-sm">View All</Button>
                 </Link>
               </div>

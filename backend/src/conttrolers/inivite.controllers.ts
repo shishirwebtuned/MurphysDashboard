@@ -5,23 +5,20 @@ import Profile from "../models/profile.model";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { AuthenticatedRequest } from "../middleware/auth";
-dotenv.config()
-
-
-
+dotenv.config();
 
 export const sendInvite = async (req: Request, res: Response) => {
   try {
-    const { email, firstName, lastName, invite_email ,role_type } = req.body;
+    const { email, firstName, lastName, invite_email, role_type } = req.body;
 
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
 
     // Check existing invites and profiles
-    const [inviteemailexist , profileemailexist ]= await Promise.all([
+    const [inviteemailexist, profileemailexist] = await Promise.all([
       Invite.findOne({ email: email, inviteStatus: "pending", role_type }),
-      Profile.findOne({ email: email })
+      Profile.findOne({ email: email }),
     ]);
     if (profileemailexist) {
       return res.status(409).json({ message: "Email is already registered" });
@@ -47,17 +44,28 @@ export const sendInvite = async (req: Request, res: Response) => {
 
     // Generate token with role_type included
     const token = jwt.sign(
-      { 
+      {
         email,
         firstName,
         lastName,
-        role_type
+        role_type,
       },
       process.env.JWT_SECRET as string,
-      { expiresIn: "5d" }
+      { expiresIn: "5d" },
     );
- const encodedUrlToken = encodeURIComponent(token);
-    const acceptUrl = `${process.env.frontendurl}createaccount/token=${encodedUrlToken}`;
+
+    let frontendUrl =
+      process.env.USER_FRONTEND_URL ||
+      "https://client.murphystechnology.com.au/";
+
+    if (role_type === "admin user") {
+      frontendUrl =
+        process.env.ADMIN_FRONTEND_URL ||
+        "https://login.murphystechnology.com.au/";
+    }
+
+    const encodedUrlToken = encodeURIComponent(token);
+    const acceptUrl = `${frontendUrl}createaccount/token=${encodedUrlToken}`;
 
     // Send email
     await transporter.sendMail({
@@ -115,20 +123,26 @@ export const sendInvite = async (req: Request, res: Response) => {
   }
 };
 
-
 export const verifyInviteToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
     if (!token) {
-      return res.status(400).json({ message: 'Token is required' });
+      return res.status(400).json({ message: "Token is required" });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { email: string };
-    const invite = await Invite.findOne({ email: decoded.email, invite_type: 'invite' });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      email: string;
+    };
+    const invite = await Invite.findOne({
+      email: decoded.email,
+      invite_type: "invite",
+    });
     if (!invite) {
       return res.status(404).json({ message: "Invite not found" });
     }
-      if(invite.inviteStatus !== 'pending') {
-      return res.status(400).json({ message: `Invite has already been ${invite.inviteStatus}` });
+    if (invite.inviteStatus !== "pending") {
+      return res
+        .status(400)
+        .json({ message: `Invite has already been ${invite.inviteStatus}` });
     }
 
     res.status(200).json({ data: invite, message: "Invite token is valid" });
@@ -136,7 +150,6 @@ export const verifyInviteToken = async (req: Request, res: Response) => {
     res.status(400).json({ message: (error as Error).message });
   }
 };
-
 
 export const getInvites = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
@@ -146,29 +159,41 @@ export const getInvites = async (req: Request, res: Response) => {
 
   try {
     if (email) {
-      const invite = await Invite.findOne({ email: email, invite_type: 'invite' });
+      const invite = await Invite.findOne({
+        email: email,
+        invite_type: "invite",
+      });
       if (!invite) {
         return res.status(404).json({ message: "Invite not found" });
       }
-      if(invite.inviteStatus == 'pending' || invite.inviteStatus == 'rejected' ) {
-        return res.status(400).json({ message: `Invite has already been ${invite.inviteStatus}` });
+      if (
+        invite.inviteStatus == "pending" ||
+        invite.inviteStatus == "rejected"
+      ) {
+        return res
+          .status(400)
+          .json({ message: `Invite has already been ${invite.inviteStatus}` });
       }
-      return res.status(200).json({ data: invite, message: "Invite retrieved successfully" });
+      return res
+        .status(200)
+        .json({ data: invite, message: "Invite retrieved successfully" });
     }
 
-    const [total , invites] = await Promise.all([
-      Invite.countDocuments({ invite_type: 'invite' }),
-      Invite.find({ invite_type: 'invite' }).skip(skip).limit(limit)
+    const [total, invites] = await Promise.all([
+      Invite.countDocuments({ invite_type: "invite" }),
+      Invite.find({ invite_type: "invite" }).skip(skip).limit(limit),
     ]);
 
-    res.status(200).json({ data: invites, 
+    res.status(200).json({
+      data: invites,
       pagination: {
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit),
       },
-       message: "Invites retrieved successfully" });
+      message: "Invites retrieved successfully",
+    });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
@@ -176,39 +201,44 @@ export const getInvites = async (req: Request, res: Response) => {
 
 export const changeInviteStatus = async (req: Request, res: Response) => {
   try {
-    const { email, status } = req.body; 
+    const { email, status } = req.body;
     if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return res.status(400).json({ message: "Email is required" });
     }
-    const invite = await Invite.findOne({ email: email, invite_type: 'invite' });
+    const invite = await Invite.findOne({
+      email: email,
+      invite_type: "invite",
+    });
     if (!invite) {
       return res.status(404).json({ message: "Invite not found" });
     }
-     invite.inviteStatus = status;
+    invite.inviteStatus = status;
     await invite.save();
-    res.status(200).json({ data: invite, message: "Invite status changed successfully" });
-  }
-  catch (error) {
+    res
+      .status(200)
+      .json({ data: invite, message: "Invite status changed successfully" });
+  } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
 };
 
-
-
-  export const updateInvite = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      const updateData = req.body;
-      const invite = await Invite.findByIdAndUpdate(id, updateData, { new: true });
-      if (!invite) {
-        return res.status(404).json({ message: "Invite not found" });
-      }
-      res.status(200).json({ data: invite, message: "Invite updated successfully" });
+export const updateInvite = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const invite = await Invite.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+    if (!invite) {
+      return res.status(404).json({ message: "Invite not found" });
     }
-    catch (error) {
-      res.status(400).json({ message: (error as Error).message });
-    }
-  };
+    res
+      .status(200)
+      .json({ data: invite, message: "Invite updated successfully" });
+  } catch (error) {
+    res.status(400).json({ message: (error as Error).message });
+  }
+};
 
 export const deleteInvite = async (req: Request, res: Response) => {
   try {
@@ -217,14 +247,15 @@ export const deleteInvite = async (req: Request, res: Response) => {
     if (!invite) {
       return res.status(404).json({ message: "Invite not found" });
     }
-    res.status(200).json({ data: invite, message: "Invite deleted successfully" });
-  }
-  catch (error) {
+    res
+      .status(200)
+      .json({ data: invite, message: "Invite deleted successfully" });
+  } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
 };
 
-export  const inviteAgain = async (req: Request, res: Response) => {
+export const inviteAgain = async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
     const invite = await Invite.findById(id);
@@ -236,20 +267,29 @@ export  const inviteAgain = async (req: Request, res: Response) => {
     const lastName = invite.lastName;
     const role_type = invite.role_type;
     const token = jwt.sign(
-      { 
+      {
         email,
         firstName,
         lastName,
-        role_type
+        role_type,
       },
       process.env.JWT_SECRET as string,
-      { expiresIn: '5d' }
+      { expiresIn: "5d" },
     );
- const encodedUrlToken = encodeURIComponent(token);
-   invite.inviteStatus = 'pending';
-   invite.role_type = role_type;
-   await invite.save();
-    const acceptUrl = `${process.env.frontendurl}createaccount/token=${encodedUrlToken}`;
+    const encodedUrlToken = encodeURIComponent(token);
+
+    let frontendUrl =
+      role_type === "admin user"
+        ? process.env.ADMIN_FRONTEND_URL ||
+          "https://login.murphystechnology.com.au/"
+        : process.env.USER_FRONTEND_URL ||
+          "https://client.murphystechnology.com.au/";
+
+    invite.inviteStatus = "pending";
+    invite.role_type = role_type;
+    await invite.save();
+
+    const acceptUrl = `${frontendUrl}createaccount/token=${encodedUrlToken}`;
 
     // Send email
     await transporter.sendMail({
@@ -295,32 +335,44 @@ export  const inviteAgain = async (req: Request, res: Response) => {
         </div>
       `,
     });
-  }
-  catch (error) {
+    res.status(200).json({
+      message: "Invitation resent successfully",
+      data: invite,
+    });
+  } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
 };
 
-
 //users
-export const getinvitebyemail = async ( req: AuthenticatedRequest, res: Response) => {
+export const getinvitebyemail = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   const email = req.user?.email;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
-    const skip = (page - 1) * limit;
-    console.log(email)
+  const skip = (page - 1) * limit;
+  console.log(email);
   try {
     if (!email) {
-      return res.status(400).json({ message: 'No email associated with authenticated user' });
+      return res
+        .status(400)
+        .json({ message: "No email associated with authenticated user" });
     }
     // Run find and count in parallel for pagination
     const [invites, total] = await Promise.all([
-      Invite.find({ invite_email: email, invite_type: 'invite' }).skip(skip).limit(limit),
-      Invite.countDocuments({ invite_email: email, invite_type: 'invite' }),
+      Invite.find({ invite_email: email, invite_type: "invite" })
+        .skip(skip)
+        .limit(limit),
+      Invite.countDocuments({ invite_email: email, invite_type: "invite" }),
     ]);
 
     if (!invites || invites.length === 0) {
-      return res.status(404).json({ message: "Invite not found" });
+      return res.status(200).json({
+        data: [],
+        message: "No invites found",
+      });
     }
 
     // Return paginated invites
@@ -334,8 +386,7 @@ export const getinvitebyemail = async ( req: AuthenticatedRequest, res: Response
       },
       message: "Invite retrieved successfully",
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).json({ message: (error as Error).message });
   }
 };

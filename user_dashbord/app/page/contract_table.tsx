@@ -28,7 +28,7 @@ import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
-import ViewNoticeModal from '../admin/notifications/ViewNoticeModal'
+import ViewNoticeModal from '../user/notifications/ViewNoticeModal'
 
 const ContractTable = () => {
 
@@ -139,7 +139,7 @@ const ContractTable = () => {
         <div className="">
             {loading && <SpinnerComponent />}
 
-         
+
 
             <div className="border-none overflow-hidden">
                 <CardHeader >
@@ -208,7 +208,7 @@ const ContractTable = () => {
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TableCell>
-                                    
+
                                         <TableCell className="text-muted-foreground text-sm">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="h-3 w-3" />
@@ -230,7 +230,7 @@ const ContractTable = () => {
                                                     <DropdownMenuItem onClick={() => handleViewDetails(notification)}>
                                                         <Eye className="mr-2 h-4 w-4" /> View Details
                                                     </DropdownMenuItem>
-                                                
+
                                                     <DropdownMenuItem className="text-destructive focus:text-destructive">
                                                         {/* Note: Delete logic is usually handled by the parent or a separate handler passed to modal */}
                                                         <Trash2 />    Delete

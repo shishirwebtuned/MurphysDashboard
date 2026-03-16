@@ -9,6 +9,13 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# archives
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
 # Runtime data
 pids/
 *.pid

@@ -41,30 +41,27 @@ export function NavProjects({
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton
-                  asChild
-                  tooltip={item.name}
-                  isActive={isActive as any}
-                  // inline style ensures visibility in light mode if Tailwind specificity conflicts
-                  style={isActive && !isDark ? { backgroundColor: '#3b82f6', color: '#ffffff' } : undefined}
-                  className={`h-9 transition-all ${
-                    isActive 
-                      ? 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 font-semibold' 
-                      : 'hover:bg-slate-100 dark:hover:bg-slate-800'
+                asChild
+                tooltip={item.name}
+                isActive={isActive as any}
+                // inline style ensures visibility in light mode if Tailwind specificity conflicts
+                style={isActive && !isDark ? { backgroundColor: '#3b82f6', color: '#ffffff' } : undefined}
+                className={`h-9 transition-all ${isActive
+                    ? 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 font-semibold'
+                    : 'hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
-                >
-                  <Link href={item.url} className="flex items-center gap-3">
-                    <item.icon className={`h-4 w-4 ${
-                      isActive 
-                        ? 'text-white dark:text-primary-foreground' 
-                        : 'text-slate-600 dark:text-slate-300'
+              >
+                <Link href={item.url} className="flex items-center gap-3">
+                  <item.icon className={`h-4 w-4 ${isActive
+                      ? 'text-white dark:text-primary-foreground'
+                      : 'text-slate-600 dark:text-slate-300'
                     }`} />
-                    <span className={`font-medium ${
-                      isActive 
-                        ? 'text-white dark:text-primary-foreground' 
-                        : 'text-slate-900 dark:text-white'
+                  <span className={`font-medium ${isActive
+                      ? 'text-white dark:text-primary-foreground'
+                      : 'text-slate-900 dark:text-white'
                     }`}>{item.name}</span>
-                  </Link>
-                </SidebarMenuButton>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           )
         })}

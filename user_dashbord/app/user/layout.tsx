@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import NextThemeProvider from "@/components/NextThemeProvider";
-import Page from "../admin/page";
+import Page from "./page";
 
 import Sidebar from "@/app/page/Appsidebar";
 import { ReduxProvider } from "@/app/page/ReduxProvider";

@@ -33,7 +33,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
 import { getMee } from "@/lib/redux/slices/meeSlice";
-import {Separator} from "@/components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { format } from 'date-fns';
 import { useRouter, usePathname } from 'next/navigation';
 import { COUNTRIES } from '@/lib/countries';
@@ -74,11 +74,11 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 export default function ProfileUpdateForm() {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
- 
+
   const { data: meeData, loading } = useAppSelector((state) => state.mee);
 
   // Extract profile data from meeData
-  const pd = meeData ;
+  const pd = meeData;
   const userEmail = meeData?.email;
   console.log('email', userEmail)
   const router = useRouter();
@@ -87,7 +87,6 @@ export default function ProfileUpdateForm() {
   const [imagePreview, setImagePreview] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [dobOpen, setDobOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(undefined);
   const [countryCallingCodes, setCountryCallingCodes] = useState<Array<any>>([]);
   const [countrySearch, setCountrySearch] = useState<string>('');
 
@@ -97,7 +96,7 @@ export default function ProfileUpdateForm() {
   }, [dispatch, meeData]);
 
 
-  console.log('meeData in profile form:',pd);
+  console.log('meeData in profile form:', pd);
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -128,7 +127,7 @@ export default function ProfileUpdateForm() {
         phone: pd.phone || '',
         countryCode: pd.countryCode || '+61',
         gender: pd.gender || '',
-        dob: pd.dob || '',
+        dob: pd.dob || undefined,
         referralSource: pd.referralSource || '',
         bio: pd.bio || '',
         website: pd.website || '',
@@ -137,7 +136,6 @@ export default function ProfileUpdateForm() {
         city: pd.city || '',
       });
       if (pd.profile_image) setImagePreview(pd.profile_image);
-      if (pd.dob) setDate(new Date(pd.dob));
     }
   }, [meeData, pd, userEmail, form]);
 
@@ -220,7 +218,7 @@ export default function ProfileUpdateForm() {
       }
 
       setTimeout(() => dispatch(clearUpdateSuccess()), 3000);
-      if (pathname === '/profile') setTimeout(() => router.push('/admin/dashboard'), 2000);
+      if (pathname === '/profile') setTimeout(() => router.push('/user/dashboard'), 2000);
     } catch (error: any) {
       toast({ title: 'Error', description: error || 'Failed to save', variant: 'destructive' });
     }
@@ -237,24 +235,24 @@ export default function ProfileUpdateForm() {
   };
 
 
-// General phone formatter aware of selected country code
-const formatPhone = (value: string, countryCode = '+61') => {
-  let digits = value.replace(/\D/g, '');
+  // General phone formatter aware of selected country code
+  const formatPhone = (value: string, countryCode = '+61') => {
+    let digits = value.replace(/\D/g, '');
 
-  // If Australian country code or local mobile, format as 04xx xxx xxx
-  if (countryCode === '+61' || digits.startsWith('61') || digits.startsWith('04') || digits.startsWith('4')) {
-    if (digits.startsWith('61')) digits = '0' + digits.slice(2);
-    if (digits.length === 9 && digits.startsWith('4')) digits = '0' + digits;
-    if (digits.length > 10) digits = digits.slice(0, 10);
-    if (digits.length > 4 && digits.length <= 7) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
-    if (digits.length > 7) return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 10)}`;
-    return digits;
+    // If Australian country code or local mobile, format as 04xx xxx xxx
+    if (countryCode === '+61' || digits.startsWith('61') || digits.startsWith('04') || digits.startsWith('4')) {
+      if (digits.startsWith('61')) digits = '0' + digits.slice(2);
+      if (digits.length === 9 && digits.startsWith('4')) digits = '0' + digits;
+      if (digits.length > 10) digits = digits.slice(0, 10);
+      if (digits.length > 4 && digits.length <= 7) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
+      if (digits.length > 7) return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 10)}`;
+      return digits;
+    }
+
+    // Generic grouping: groups of 3 from start
+    if (digits.length > 12) digits = digits.slice(0, 15);
+    return digits.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
   }
-
-  // Generic grouping: groups of 3 from start
-  if (digits.length > 12) digits = digits.slice(0, 15);
-  return digits.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
-}
 
 
   return (
@@ -403,38 +401,54 @@ const formatPhone = (value: string, countryCode = '+61') => {
                       <FormField
                         control={form.control}
                         name="dob"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Date of Birth</FormLabel>
-                            <Popover open={dobOpen} onOpenChange={setDobOpen}>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button variant="outline" className={cn("justify-between font-normal bg-muted/50", !date && "text-muted-foreground")}>
-                                    {date ? format(date, "PPP") : "Select date"}
+                        render={({ field }) => {
+                          const selectedDate = field.value ? new Date(field.value) : undefined;
+                          return (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Date of Birth</FormLabel>
+
+                              <Popover open={dobOpen} onOpenChange={setDobOpen}>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    className={cn(
+                                      "justify-between font-normal bg-muted/50",
+                                      !selectedDate && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {selectedDate && !isNaN(selectedDate.getTime())
+                                      ? format(selectedDate, "PPP")
+                                      : "Select date"}
                                     <CalendarIcon className="w-4 h-4 ml-2 opacity-50" />
                                   </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  captionLayout="dropdown"
-                                  selected={date}
-                                  onSelect={(d: Date | undefined) => {
-                                    setDate(d);
-                                    if (d) field.onChange(d.toISOString().split('T')[0]);
-                                    setDobOpen(false);
-                                  }}
-                                  disabled={(d) => d > new Date() || d < new Date("1900-01-01")}
-                                  fromYear={1900}
-                                  toYear={new Date().getFullYear()}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                                </PopoverTrigger>
+
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    captionLayout="dropdown"
+                                    selected={selectedDate}
+                                    onSelect={(d: Date | undefined) => {
+                                      if (d) {
+                                        field.onChange(d.toISOString().split("T")[0]);
+                                      } else {
+                                        field.onChange(undefined);
+                                      }
+                                      setDobOpen(false);
+                                    }}
+                                    disabled={(d) => d > new Date() || d < new Date("1900-01-01")}
+                                    fromYear={1900}
+                                    toYear={new Date().getFullYear() - 17} // enforce 17+ age
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
                       />
                     </div>
                   </motion.div>
@@ -517,112 +531,112 @@ const formatPhone = (value: string, countryCode = '+61') => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<FormField
-  control={form.control}
-  name="phone"
-  
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Mobile Number</FormLabel>
+                      <FormField
+                        control={form.control}
+                        name="phone"
 
-      <FormControl>
-        <div className="flex items-center gap-3">
-          <div className="w-36">
-            <Select value={form.watch('countryCode') || '+61'} onValueChange={(val) => form.setValue('countryCode', val)}>
-              <SelectTrigger className="w-full bg-muted/50  text-sm pr-4">
-                <SelectValue />
-              </SelectTrigger>
-              {/* Dropdown with search at top (sticky) */}
-              <SelectContent className="p-0" position="popper" align="start">
-                {/* Sticky search bar at top */}
-                <div className="sticky top-0  bg-popover border-b border-border p-3">
-                  <Input
-                    placeholder="Search country or code..."
-                    value={countrySearch}
-                    onChange={(e) => setCountrySearch(e.target.value)}
-                    className="w-full bg-background text-sm py-2 rounded-md"
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => e.stopPropagation()}
-                  />
-                </div>
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mobile Number</FormLabel>
 
-                {/* Scrollable country list */}
-                <div className="max-h-64 overflow-y-auto p-1">
-                  {countryCallingCodes.length === 0 ? (
-                    <SelectItem value="+61">+61 (Default)</SelectItem>
-                  ) : (
-                    countryCallingCodes
-                      .filter((c) => {
-                        if (!countrySearch) return true;
-                        const q = countrySearch.toLowerCase();
-                        return String(c.name).toLowerCase().includes(q) || String(c.code).toLowerCase().includes(q) || String(c.iso2).toLowerCase().includes(q);
-                      })
-                      .map((c) => (
-                        <SelectItem key={c.code + c.iso2} value={c.code}>{c.code} ({c.name})</SelectItem>
-                      ))
-                  )}
-                  {countryCallingCodes.length > 0 && 
-                   countryCallingCodes.filter((c) => {
-                     if (!countrySearch) return true;
-                     const q = countrySearch.toLowerCase();
-                     return String(c.name).toLowerCase().includes(q) || String(c.code).toLowerCase().includes(q) || String(c.iso2).toLowerCase().includes(q);
-                   }).length === 0 && (
-                    <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-                      No countries found
-                    </div>
-                  )}
-                </div>
-              </SelectContent>
-            </Select>
-          </div>
+                            <FormControl>
+                              <div className="flex items-center gap-3">
+                                <div className="w-36">
+                                  <Select value={form.watch('countryCode') || '+61'} onValueChange={(val) => form.setValue('countryCode', val)}>
+                                    <SelectTrigger className="w-full bg-muted/50  text-sm pr-4">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    {/* Dropdown with search at top (sticky) */}
+                                    <SelectContent className="p-0" position="popper" align="start">
+                                      {/* Sticky search bar at top */}
+                                      <div className="sticky top-0  bg-popover border-b border-border p-3">
+                                        <Input
+                                          placeholder="Search country or code..."
+                                          value={countrySearch}
+                                          onChange={(e) => setCountrySearch(e.target.value)}
+                                          className="w-full bg-background text-sm py-2 rounded-md"
+                                          onClick={(e) => e.stopPropagation()}
+                                          onKeyDown={(e) => e.stopPropagation()}
+                                        />
+                                      </div>
 
-          <Input
-            {...field}
-            type="tel"
-            placeholder="412 345 678"
-            inputMode="numeric"
-            className="flex-1 bg-muted/50"
-            onChange={(e) => {
-              const raw = e.target.value || '';
-              
-              // Only detect country code if user types "+" at the start
-              if (raw.startsWith('+') && countryCallingCodes && countryCallingCodes.length) {
-                const normalized = raw.replace(/\s+/g, '');
-                let matchedCode: string | undefined;
-                
-                // Try longest-first match (e.g. +1, +44, +965)
-                const codesSorted = [...countryCallingCodes].sort((a, b) => b.code.length - a.code.length);
-                for (const c of codesSorted) {
-                  const codeStr = String(c.code);
-                  if (normalized.startsWith(codeStr)) {
-                    matchedCode = codeStr;
-                    break;
-                  }
-                }
-                
-                if (matchedCode) {
-                  // Extract phone number after the country code
-                  let remainder = normalized.slice(matchedCode.length);
-                  form.setValue('countryCode', matchedCode);
-                  const formatted = formatPhone(remainder, matchedCode);
-                  field.onChange(formatted);
-                  return;
-                }
-              }
-              
-              // Normal formatting without country code detection
-              const code = form.getValues('countryCode') || '+61';
-              const formatted = formatPhone(raw, code);
-              field.onChange(formatted);
-            }}
-          />
-        </div>
-      </FormControl>
+                                      {/* Scrollable country list */}
+                                      <div className="max-h-64 overflow-y-auto p-1">
+                                        {countryCallingCodes.length === 0 ? (
+                                          <SelectItem value="+61">+61 (Default)</SelectItem>
+                                        ) : (
+                                          countryCallingCodes
+                                            .filter((c) => {
+                                              if (!countrySearch) return true;
+                                              const q = countrySearch.toLowerCase();
+                                              return String(c.name).toLowerCase().includes(q) || String(c.code).toLowerCase().includes(q) || String(c.iso2).toLowerCase().includes(q);
+                                            })
+                                            .map((c) => (
+                                              <SelectItem key={c.code + c.iso2} value={c.code}>{c.code} ({c.name})</SelectItem>
+                                            ))
+                                        )}
+                                        {countryCallingCodes.length > 0 &&
+                                          countryCallingCodes.filter((c) => {
+                                            if (!countrySearch) return true;
+                                            const q = countrySearch.toLowerCase();
+                                            return String(c.name).toLowerCase().includes(q) || String(c.code).toLowerCase().includes(q) || String(c.iso2).toLowerCase().includes(q);
+                                          }).length === 0 && (
+                                            <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+                                              No countries found
+                                            </div>
+                                          )}
+                                      </div>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
 
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+                                <Input
+                                  {...field}
+                                  type="tel"
+                                  placeholder="412 345 678"
+                                  inputMode="numeric"
+                                  className="flex-1 bg-muted/50"
+                                  onChange={(e) => {
+                                    const raw = e.target.value || '';
+
+                                    // Only detect country code if user types "+" at the start
+                                    if (raw.startsWith('+') && countryCallingCodes && countryCallingCodes.length) {
+                                      const normalized = raw.replace(/\s+/g, '');
+                                      let matchedCode: string | undefined;
+
+                                      // Try longest-first match (e.g. +1, +44, +965)
+                                      const codesSorted = [...countryCallingCodes].sort((a, b) => b.code.length - a.code.length);
+                                      for (const c of codesSorted) {
+                                        const codeStr = String(c.code);
+                                        if (normalized.startsWith(codeStr)) {
+                                          matchedCode = codeStr;
+                                          break;
+                                        }
+                                      }
+
+                                      if (matchedCode) {
+                                        // Extract phone number after the country code
+                                        let remainder = normalized.slice(matchedCode.length);
+                                        form.setValue('countryCode', matchedCode);
+                                        const formatted = formatPhone(remainder, matchedCode);
+                                        field.onChange(formatted);
+                                        return;
+                                      }
+                                    }
+
+                                    // Normal formatting without country code detection
+                                    const code = form.getValues('countryCode') || '+61';
+                                    const formatted = formatPhone(raw, code);
+                                    field.onChange(formatted);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="website"

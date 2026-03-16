@@ -31,7 +31,7 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const mee = useAppSelector((state) => state.mee.data)
-  
+
   useEffect(() => {
     if (!mee) dispatch(getMee())
   }, [dispatch, mee])
@@ -92,7 +92,7 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
           {/* Header */}
           <div className="p-3 sm:p-4 flex items-center gap-3 border-b border-slate-100 dark:border-white/5">
             <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center overflow-hidden">
-               {userAvatar ? <img src={userAvatar} alt={userName} /> : getInitials(userName)}
+              {userAvatar ? <img src={userAvatar} alt={userName} /> : getInitials(userName)}
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-xs sm:text-sm font-semibold truncate">{userName}</span>
@@ -105,29 +105,29 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
 
           {/* Body */}
           <div className="p-1 sm:p-1.5">
-            <button 
-              onClick={() => { router.push('/admin/profile'); setIsOpen(false); }}
+            <button
+              onClick={() => { router.push('/user/profile'); setIsOpen(false); }}
               className="flex items-center w-full gap-3 px-2 py-2 sm:px-3 sm:py-2 text-xs sm:text-sm rounded-md hover:bg-slate-100 dark:hover:bg-white/10"
             >
               <User className="h-4 w-4" /> My Profile
             </button>
-            <button 
-              onClick={() => { router.push('/admin/change_password'); setIsOpen(false); }}
+            <button
+              onClick={() => { router.push('/user/change_password'); setIsOpen(false); }}
               className="flex items-center w-full gap-3 px-2 py-2 sm:px-3 sm:py-2 text-xs sm:text-sm rounded-md hover:bg-slate-100 dark:hover:bg-white/10"
             >
-              <Settings className="h-4 w-4" /> Settings
+              <Settings className="h-4 w-4" /> Change Password
             </button>
-            
+
             <div className="h-px bg-slate-100 dark:bg-white/5 my-1" />
- 
-            <button 
+
+            <button
               onClick={() => { setShowLogoutDialog(true); setIsOpen(false); }}
               className="flex items-center w-full gap-3 px-2 py-2 sm:px-3 sm:py-2 text-xs sm:text-sm text-red-500 rounded-md hover:bg-red-50 dark:hover:bg-red-900/10"
             >
               <LogOut className="h-4 w-4" /> Log out
             </button>
-            <Link href="/admin/delete_account" className="flex items-center w-full gap-3 px-2 py-2 sm:px-3 sm:py-2 text-xs sm:text-sm text-red-500 rounded-md hover:bg-red-50 dark:hover:bg-red-900/10">
-               <Trash className="h-4 w-4" /> Delete Account
+            <Link href="/user/delete_account" className="flex items-center w-full gap-3 px-2 py-2 sm:px-3 sm:py-2 text-xs sm:text-sm text-red-500 rounded-md hover:bg-red-50 dark:hover:bg-red-900/10">
+              <Trash className="h-4 w-4" /> Delete Account
             </Link>
           </div>
         </div>

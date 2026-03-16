@@ -22,7 +22,7 @@ const Page = () => {
                 params: { email },
             })
             console.log('Profile data:', response.data)
-            
+
             // Store profile data in Redux
             const profileData = response.data?.data || response.data
             if (profileData) {
@@ -30,9 +30,9 @@ const Page = () => {
             }
 
             const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
-            // Only navigate to /admin/dashboard when not already under any /admin route
-            if (!currentPath.startsWith('/admin')) {
-                router.push('/admin/dashboard')
+            // Only navigate to /user/dashboard when not already under any /user route
+            if (!currentPath.startsWith('/user')) {
+                router.push('/user/dashboard')
             }
         } catch (error: any) {
             console.error('Error fetching profile data:', error)

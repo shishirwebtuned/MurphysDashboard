@@ -24,7 +24,7 @@ export default function RegisterPage() {
   const [submittedEmail, setSubmittedEmail] = useState('');
   const [modalStatus, setModalStatus] = useState<string | null>(null);
 
- 
+
 
 
 
@@ -91,8 +91,8 @@ export default function RegisterPage() {
                         type="text"
                         placeholder="First Name"
                         className={`h-12 text-base rounded shadow-none ${touched.firstName && errors.firstName
-                            ? "border-red-500"
-                            : ""
+                          ? "border-red-500"
+                          : ""
                           }`}
                       />
                       {touched.firstName && errors.firstName && (
@@ -108,8 +108,8 @@ export default function RegisterPage() {
                         type="text"
                         placeholder="Last Name"
                         className={`h-12 text-base rounded shadow-none ${touched.lastName && errors.lastName
-                            ? "border-red-500"
-                            : ""
+                          ? "border-red-500"
+                          : ""
                           }`}
                       />
                       {touched.lastName && errors.lastName && (
@@ -127,8 +127,8 @@ export default function RegisterPage() {
                       type="email"
                       placeholder="Email Address"
                       className={`h-12 text-base rounded shadow-none ${touched.email && errors.email
-                          ? "border-red-500"
-                          : ""
+                        ? "border-red-500"
+                        : ""
                         }`}
                     />
                     {touched.email && errors.email && (

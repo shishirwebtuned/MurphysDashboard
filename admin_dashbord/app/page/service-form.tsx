@@ -50,7 +50,7 @@ const serviceSchema = z.object({
   billingType: z.enum(['one_time', 'monthly', 'yearly', 'pay_as_you_go']),
   categoryId: z.string().min(1, 'Select category'),
   categoryName: z.string().min(1, 'Category name is required'),
-  
+
   // New fields
   hasDiscount: z.boolean().default(false),
   discountType: z.enum(['percentage', 'fixed']).optional(),
@@ -58,12 +58,14 @@ const serviceSchema = z.object({
   discountReason: z.string().optional(),
   discountStartDate: z.string().optional(),
   discountEndDate: z.string().optional(),
-  
+
   tags: z.array(z.string()).default([]),
   features: z.array(z.string()).default([]),
   isActive: z.boolean().optional(),
   isFeatured: z.boolean().default(false),
-  durationInDays: z.coerce.number().positive().optional(),
+  durationInDays: z.coerce
+    .number()
+    .positive('Duration must be positive'),
   notes: z.string().optional(),
 });
 
@@ -97,44 +99,44 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
     resolver: zodResolver(serviceSchema),
     defaultValues: service
       ? {
-          name: service.name,
-          description: service.description,
-          price: service.price,
-          currency: service.currency ?? 'AUD',
-          billingType: service.billingType,
-          categoryId: service.categoryId,
-          categoryName: service.categoryName,
-          hasDiscount: service.hasDiscount ?? false,
-          discountType: service.discountType ?? 'percentage',
-          discountValue: service.discountValue ?? 0,
-          discountReason: service.discountReason ?? '',
-          discountStartDate: service.discountStartDate ? new Date(service.discountStartDate).toISOString().split('T')[0] : '',
-          discountEndDate: service.discountEndDate ? new Date(service.discountEndDate).toISOString().split('T')[0] : '',
-          tags: service.tags ?? [],
-          features: service.features ?? [],
-          isFeatured: service.isFeatured ?? false,
-          durationInDays: service.durationInDays,
-          notes: service.notes ?? '',
-        }
+        name: service.name,
+        description: service.description,
+        price: service.price,
+        currency: service.currency ?? 'AUD',
+        billingType: service.billingType,
+        categoryId: service.categoryId,
+        categoryName: service.categoryName,
+        hasDiscount: service.hasDiscount ?? false,
+        discountType: service.discountType ?? 'percentage',
+        discountValue: service.discountValue ?? 0,
+        discountReason: service.discountReason ?? '',
+        discountStartDate: service.discountStartDate ? new Date(service.discountStartDate).toISOString().split('T')[0] : '',
+        discountEndDate: service.discountEndDate ? new Date(service.discountEndDate).toISOString().split('T')[0] : '',
+        tags: service.tags ?? [],
+        features: service.features ?? [],
+        isFeatured: service.isFeatured ?? false,
+        durationInDays: service.durationInDays,
+        notes: service.notes ?? '',
+      }
       : {
-          name: '',
-          description: '',
-          price: 0,
-          currency: 'AUD',
-          billingType: 'one_time',
-          categoryId: '',
-          categoryName: '',
-          hasDiscount: false,
-          discountType: 'percentage',
-          discountValue: 0,
-          discountReason: '',
-          discountStartDate: '',
-          discountEndDate: '',
-          tags: [],
-          features: [],
-          isFeatured: false,
-          notes: '',
-        },
+        name: '',
+        description: '',
+        price: 0,
+        currency: 'AUD',
+        billingType: 'one_time',
+        categoryId: '',
+        categoryName: '',
+        hasDiscount: false,
+        discountType: 'percentage',
+        discountValue: 0,
+        discountReason: '',
+        discountStartDate: '',
+        discountEndDate: '',
+        tags: [],
+        features: [],
+        isFeatured: false,
+        notes: '',
+      },
   });
 
   const hasDiscount = form.watch('hasDiscount');
@@ -145,7 +147,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
   // Calculate discounted price
   const calculateDiscountedPrice = () => {
     if (!hasDiscount || !discountValue) return price;
-    
+
     if (discountType === 'percentage') {
       return price - (price * discountValue / 100);
     } else {
@@ -195,7 +197,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
     }
   }, [service, form]);
 
-  
+
 
   const addTag = () => {
     if (tagInput.trim()) {
@@ -267,11 +269,11 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
       setImageFile(null);
       setImagePreview('');
       onSuccess?.();
-    } catch {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to save service',
-        variant: 'destructive',
+        title: "Error",
+        description: String(error),
+        variant: "destructive"
       });
     }
   };
@@ -280,183 +282,387 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
 
   return (
     <>
-   
-    <Form {...form}  >
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 "> 
 
-        {/* Service Name */}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Service Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter service name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <Form {...form}  >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 ">
 
-        {/* Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Enter service description"
-                  className="min-h-[100px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Image Upload */}
-        <ImageUploadField
-          imageFile={imageFile}
-          setImageFile={setImageFile}
-          imagePreview={imagePreview}
-          setImagePreview={setImagePreview}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          {/* Price */}
+          {/* Service Name */}
           <FormField
             control={form.control}
-            name="price"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Amount</FormLabel>
+                <FormLabel>Service Name</FormLabel>
                 <FormControl>
-                  <Input type="number" step="0.01" min="0" {...field} />
+                  <Input placeholder="Enter service name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Currency */}
+          {/* Description */}
           <FormField
             control={form.control}
-            name="currency"
+            name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Currency</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl className=' w-full'>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                  </FormControl>
-
-                  <SelectContent className="max-h-[300px]">
-                    {currencies.map((currency) => (
-                      <SelectItem key={currency.code} value={currency.code}>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{currency.icon}</span>
-                          <span className="font-medium">{currency.code}</span>
-                          <span className="text-muted-foreground text-sm">
-                            {currency.name}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter service description"
+                    className="min-h-[100px]"
+                    {...field}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Billing Type */}
-          <FormField
-            control={form.control}
-            name="billingType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Billing Type</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl className=' w-full'>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select billing type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="one_time">One Time</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
-                    <SelectItem value="pay_as_you_go">Pay as you go</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+          {/* Image Upload */}
+          <ImageUploadField
+            imageFile={imageFile}
+            setImageFile={setImageFile}
+            imagePreview={imagePreview}
+            setImagePreview={setImagePreview}
           />
 
-          {/* Category */}
-          <FormField
-            control={form.control}
-            name="categoryId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={(value) => {
-                    const selectedCategory = categories.find(cat => cat._id === value);
-                    field.onChange(value);
-                    if (selectedCategory) {
-                      form.setValue('categoryName', selectedCategory.name);
-                    }
-                  }}
-                  disabled={categoriesLoading}
-                >
-                  <FormControl className=' w-full'>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category">
-                        {field.value ? categories.find(cat => cat._id === field.value)?.name || 'Select category' : 'Select category'}
-                      </SelectValue>
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {categories.filter(cat => cat.status === 'active').map((category) => (
-                      <SelectItem key={category._id} value={category._id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  {categoriesLoading && 'Loading categories...'}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        {/* DISCOUNT SECTION */}
-        <div className="border rounded-lg p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Percent className="h-5 w-5 text-green-600" />
-              <h3 className="font-semibold">Discount Settings</h3>
-            </div>
+            {/* Price */}
             <FormField
               control={form.control}
-              name="hasDiscount"
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input type="number" step="0.01" min="0" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Currency */}
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl className=' w-full'>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent className="max-h-[300px]">
+                      {currencies.map((currency) => (
+                        <SelectItem key={currency.code} value={currency.code}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{currency.icon}</span>
+                            <span className="font-medium">{currency.code}</span>
+                            <span className="text-muted-foreground text-sm">
+                              {currency.name}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Billing Type */}
+            <FormField
+              control={form.control}
+              name="billingType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Billing Type</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl className=' w-full'>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select billing type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="one_time">One Time</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                      <SelectItem value="pay_as_you_go">Pay as you go</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Category */}
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      const selectedCategory = categories.find(cat => cat._id === value);
+                      field.onChange(value);
+                      if (selectedCategory) {
+                        form.setValue('categoryName', selectedCategory.name);
+                      }
+                    }}
+                    disabled={categoriesLoading}
+                  >
+                    <FormControl className=' w-full'>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category">
+                          {field.value ? categories.find(cat => cat._id === field.value)?.name || 'Select category' : 'Select category'}
+                        </SelectValue>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.filter(cat => cat.status === 'active').map((category) => (
+                        <SelectItem key={category._id} value={category._id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    {categoriesLoading && 'Loading categories...'}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* DISCOUNT SECTION */}
+          <div className="border rounded-lg p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Percent className="h-5 w-5 text-green-600" />
+                <h3 className="font-semibold">Discount Settings</h3>
+              </div>
+              <FormField
+                control={form.control}
+                name="hasDiscount"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-2">
+                    <FormLabel className="!mt-0">Enable Discount</FormLabel>
+                    <FormControl  >
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {hasDiscount && (
+              <div className="space-y-4 animate-in fade-in">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="discountType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Discount Type</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl className=' w-full'>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="percentage">Percentage (%)</SelectItem>
+                            <SelectItem value="fixed">Fixed Amount</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="discountValue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Discount Value {discountType === 'percentage' ? '(%)' : ''}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max={discountType === 'percentage' ? '100' : undefined}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="discountReason"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Discount Reason (e.g., "New Year Sale", "Black Friday")</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter discount reason" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="discountStartDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="discountEndDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>End Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {discountValue > 0 && (
+                  <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                    <p className="text-sm font-medium text-green-900">
+                      Discounted Price: {form.watch('currency')} {calculateDiscountedPrice().toFixed(2)}
+                      <span className="text-green-600 ml-2">
+                        (Save {discountType === 'percentage'
+                          ? `${discountValue}%`
+                          : `${form.watch('currency')} ${discountValue}`})
+                      </span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* TAGS SECTION */}
+          <div className="space-y-3">
+            <FormLabel className="flex items-center gap-2">
+              <Tag className="h-4 w-4" />
+              Tags
+            </FormLabel>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Add tags (e.g., Popular, Premium, Limited)"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+              />
+              <Button type="button" onClick={addTag} size="sm">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {form.watch('tags')?.map((tag: string) => (
+                <Badge key={tag} variant="secondary" className="gap-1">
+                  {tag}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() => removeTag(tag)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* FEATURES SECTION */}
+          <div className="space-y-3">
+            <FormLabel>Service Features</FormLabel>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Add feature (e.g., 24/7 Support, Free Updates)"
+                value={featureInput}
+                onChange={(e) => setFeatureInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+              />
+              <Button type="button" onClick={addFeature} size="sm">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            <ul className="space-y-2">
+              {form.watch('features')?.map((feature: string, index: number) => (
+                <li key={index} className="flex items-center justify-between bg-muted p-2 rounded">
+                  <span className="text-sm">• {feature}</span>
+                  <X
+                    className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-destructive"
+                    onClick={() => removeFeature(index)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* DURATION */}
+          <div className="grid grid-cols-1 gap-4">
+            <FormField
+              control={form.control}
+              name="durationInDays"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration (Days)</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="1" placeholder="Optional" {...field} />
+                  </FormControl>
+                  <FormDescription className="text-xs">
+                    For time-limited services
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* FEATURED TOGGLE */}
+          <div className="flex gap-6">
+            <FormField
+              control={form.control}
+              name="isFeatured"
               render={({ field }) => (
                 <FormItem className="flex items-center gap-2">
-                  <FormLabel className="!mt-0">Enable Discount</FormLabel>
-                  <FormControl  >
+                  <FormLabel className="!mt-0">Featured</FormLabel>
+                  <FormControl>
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
@@ -467,241 +673,37 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
             />
           </div>
 
-          {hasDiscount && (
-            <div className="space-y-4 animate-in fade-in">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="discountType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Discount Type</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <FormControl className=' w-full'>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="percentage">Percentage (%)</SelectItem>
-                          <SelectItem value="fixed">Fixed Amount</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="discountValue"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Discount Value {discountType === 'percentage' ? '(%)' : ''}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max={discountType === 'percentage' ? '100' : undefined}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="discountReason"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Discount Reason (e.g., "New Year Sale", "Black Friday")</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter discount reason" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="discountStartDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Start Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="discountEndDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>End Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {discountValue > 0 && (
-                <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                  <p className="text-sm font-medium text-green-900">
-                    Discounted Price: {form.watch('currency')} {calculateDiscountedPrice().toFixed(2)}
-                    <span className="text-green-600 ml-2">
-                      (Save {discountType === 'percentage' 
-                        ? `${discountValue}%` 
-                        : `${form.watch('currency')} ${discountValue}`})
-                    </span>
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* TAGS SECTION */}
-        <div className="space-y-3">
-          <FormLabel className="flex items-center gap-2">
-            <Tag className="h-4 w-4" />
-            Tags
-          </FormLabel>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Add tags (e.g., Popular, Premium, Limited)"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-            />
-            <Button type="button" onClick={addTag} size="sm">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {form.watch('tags')?.map((tag: string) => (
-              <Badge key={tag} variant="secondary" className="gap-1">
-                {tag}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => removeTag(tag)}
-                />
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        {/* FEATURES SECTION */}
-        <div className="space-y-3">
-          <FormLabel>Service Features</FormLabel>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Add feature (e.g., 24/7 Support, Free Updates)"
-              value={featureInput}
-              onChange={(e) => setFeatureInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
-            />
-            <Button type="button" onClick={addFeature} size="sm">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-          <ul className="space-y-2">
-            {form.watch('features')?.map((feature: string, index: number) => (
-              <li key={index} className="flex items-center justify-between bg-muted p-2 rounded">
-                <span className="text-sm">• {feature}</span>
-                <X
-                  className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-destructive"
-                  onClick={() => removeFeature(index)}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* DURATION */}
-        <div className="grid grid-cols-1 gap-4">
+          {/* NOTES */}
           <FormField
             control={form.control}
-            name="durationInDays"
+            name="notes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Duration (Days)</FormLabel>
+                <FormLabel>Internal Notes</FormLabel>
                 <FormControl>
-                  <Input type="number" min="1" placeholder="Optional" {...field} />
+                  <Textarea
+                    placeholder="Add any internal notes or reminders"
+                    className="min-h-[80px]"
+                    {...field}
+                  />
                 </FormControl>
-                <FormDescription className="text-xs">
-                  For time-limited services
+                <FormDescription>
+                  These notes are for internal use only
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
 
-        {/* FEATURED TOGGLE */}
-        <div className="flex gap-6">
-          <FormField
-            control={form.control}
-            name="isFeatured"
-            render={({ field }) => (
-              <FormItem className="flex items-center gap-2">
-                <FormLabel className="!mt-0">Featured</FormLabel>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
-
-        {/* NOTES */}
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Internal Notes</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Add any internal notes or reminders"
-                  className="min-h-[80px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                These notes are for internal use only
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Submit */}
-        <div className="flex justify-end">
-          <Button type="submit" disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {service ? 'Update Service' : 'Create Service'}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          {/* Submit */}
+          <div className="flex justify-end">
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {service ? 'Update Service' : 'Create Service'}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </>
   );
 }

@@ -135,7 +135,7 @@ export default function CreateTicketPage() {
 
     try {
       const userName = meeData.displayName || meeData.email?.split('@')[0] || 'User'
-      
+
       const form = new FormData()
       form.append('userId', meeData.uid || '')
       form.append('userEmail', meeData.email || '')
@@ -152,7 +152,7 @@ export default function CreateTicketPage() {
 
       await dispatch(createTicket(form)).unwrap()
       toast.success('Ticket created successfully')
-      router.push('/admin/open_ticket')
+      router.push('/user/open_ticket')
     } catch (error: any) {
       toast.error(error || 'Failed to create ticket')
     } finally {
@@ -284,11 +284,10 @@ export default function CreateTicketPage() {
                   />
                   <Label
                     htmlFor="image-upload"
-                    className={`flex items-center justify-center gap-2 h-24 border-2 border-dashed rounded-md cursor-pointer transition-colors ${
-                      images.length >= 5
+                    className={`flex items-center justify-center gap-2 h-24 border-2 border-dashed rounded-md cursor-pointer transition-colors ${images.length >= 5
                         ? 'opacity-50 cursor-not-allowed'
                         : 'hover:border-primary hover:bg-accent'
-                    }`}
+                      }`}
                   >
                     <Upload className="h-5 w-5" />
                     <span>

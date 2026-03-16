@@ -25,7 +25,7 @@ import SpinnerComponent from './common/Spinner';
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 
-interface ServiceTableProps {   
+interface ServiceTableProps {
     categoryFilter?: string;
 }
 
@@ -42,7 +42,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
     const [selectedViewService, setSelectedViewService] = useState<Service | null>(null);
     const [clickImage, setClickImage] = useState<string>('');
     const userid = useAppSelector((s) => s.mee.data?._id) || '';
-    console.log('Services in ServiceTable in card:', userid  );
+    console.log('Services in ServiceTable in card:', userid);
     useEffect(() => {
         dispatch(fetchServices({ page: currentPage, limit: ITEMS_PER_PAGE, category: categoryFilter === 'all' ? undefined : categoryFilter } as any));
     }, [dispatch, currentPage, categoryFilter]);
@@ -83,7 +83,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                 description: `${service.name} added to cart!`,
             });
             // Navigate to cart page
-            window.location.href = '/admin/cart';
+            window.location.href = '/user/cart';
         } catch (err: any) {
             const errorMessage = err || 'Failed to add to cart';
             toast({
@@ -104,7 +104,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
         return (
             <div className="">
                 <SpinnerComponent />
-               
+
             </div>
         );
     }
@@ -121,10 +121,10 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                 <Dialog open={Boolean(clickImage)} onOpenChange={() => setClickImage('')}>
                     <DialogContent className="max-w-4xl p-0 overflow-hidden bg-transparent border-none shadow-none">
                         <div className="relative w-full h-full flex justify-center items-center">
-                            <img 
-                                src={clickImage} 
-                                alt="Service Full Size" 
-                                className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl" 
+                            <img
+                                src={clickImage}
+                                alt="Service Full Size"
+                                className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl"
                             />
                         </div>
                     </DialogContent>
@@ -142,13 +142,13 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                         : service.price;
 
                     return (
-                        <Card 
-                            key={(service as any)._id || (service as any).id} 
+                        <Card
+                            key={(service as any)._id || (service as any).id}
                             className="group relative flex p-0 flex-col h-full overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-2xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900"
                         >
                             {/* Top accent border */}
                             <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            
+
                             {/* 1. Full Bleed Image Header */}
                             <div className="relative aspect-[16/10] overflow-hidden bg-gray-100 dark:bg-gray-800">
                                 {((service as any).image || (service as any).imageUrl) ? (
@@ -164,7 +164,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                         <span className="text-sm font-medium">No Preview Available</span>
                                     </div>
                                 )}
-                                
+
                                 {/* Category Badge */}
                                 <div className="absolute top-4 left-4 z-10">
                                     <Badge className="bg-white/95 dark:bg-gray-900/95 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 shadow-lg backdrop-blur-sm px-3 py-1 text-xs font-semibold">
@@ -173,7 +173,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                 </div>
 
                                 {hasDiscount && (
-                                     <div className="absolute top-4 right-4 z-10">
+                                    <div className="absolute top-4 right-4 z-10">
                                         <Badge className="bg-red-500 hover:bg-red-600 text-white border-0 shadow-lg px-3 py-1 text-xs font-bold">
                                             {service.discountType === 'percentage' ? `-${service.discountValue}%` : 'SALE'}
                                         </Badge>
@@ -182,9 +182,9 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
 
                                 {/* Hover Overlay with Actions */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-2">
-                                    <Button 
-                                        variant="secondary" 
-                                        size="sm" 
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
                                         className="bg-white hover:bg-gray-100 text-gray-900 border-0 shadow-xl translate-y-4 group-hover:translate-y-0 transition-all duration-300 font-medium"
                                         onClick={() => handleViewClick(service)}
                                     >
@@ -212,13 +212,13 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                         <h3 className="font-bold text-xl leading-tight line-clamp-1 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {service.name}
                                         </h3>
-                                        
+
                                         {/* Dropdown Menu */}
                                         <DropdownMenu modal={false}>
                                             <DropdownMenuTrigger asChild>
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="icon" 
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
                                                     className="h-8 w-8 shrink-0 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-md"
                                                 >
                                                     <MoreVertical className="h-5 w-5" />
@@ -248,7 +248,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                 <div className="space-y-4">
                                     {/* Divider */}
                                     <div className="w-full h-px bg-gray-200 dark:bg-gray-800" />
-                                    
+
                                     <div className="flex items-center justify-between">
                                         <div className="flex flex-col gap-1">
                                             <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
@@ -289,7 +289,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                         <span className="font-medium text-foreground">{Math.min(endIndex, total || 0)}</span> of{' '}
                         <span className="font-medium text-foreground">{total || 0}</span> services
                     </p>
-                    
+
                     <div className="flex items-center gap-1.5 p-1 bg-secondary/30 rounded-lg">
                         <Button
                             variant="ghost"
@@ -300,7 +300,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        
+
                         <div className="flex items-center px-2">
                             <span className="text-sm font-medium">Page {currentPage} of {effectiveTotalPages}</span>
                         </div>
@@ -337,12 +337,12 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                     </div>
                                 )}
                                 <div className="absolute top-4 left-4">
-                                     <Badge variant="secondary" className="bg-background/90 backdrop-blur">
+                                    <Badge variant="secondary" className="bg-background/90 backdrop-blur">
                                         {selectedViewService.categoryName}
-                                     </Badge>
+                                    </Badge>
                                 </div>
                             </div>
-                            
+
                             {/* Content in Dialog */}
                             <div className="flex-1 p-6 md:p-8 space-y-6 bg-background">
                                 <div>
@@ -350,11 +350,11 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                     <div className="flex items-center gap-3">
                                         <span className="text-3xl font-bold text-blue-600">
                                             {formatPrice(
-                                                selectedViewService.hasDiscount && selectedViewService.discountValue 
-                                                ? (selectedViewService.discountType === 'percentage' 
-                                                    ? selectedViewService.price * (1 - (selectedViewService.discountValue/100)) 
-                                                    : selectedViewService.price - selectedViewService.discountValue)
-                                                : selectedViewService.price,
+                                                selectedViewService.hasDiscount && selectedViewService.discountValue
+                                                    ? (selectedViewService.discountType === 'percentage'
+                                                        ? selectedViewService.price * (1 - (selectedViewService.discountValue / 100))
+                                                        : selectedViewService.price - selectedViewService.discountValue)
+                                                    : selectedViewService.price,
                                                 selectedViewService.billingType,
                                                 selectedViewService.currency
                                             )}
@@ -373,7 +373,7 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                 </div>
 
                                 <Separator />
-                                
+
                                 <div className="space-y-4">
                                     <div>
                                         <h4 className="text-sm font-semibold mb-2">Description</h4>
@@ -434,8 +434,8 @@ export default function ServiceTable({ categoryFilter = 'all' }: ServiceTablePro
                                 </div>
 
                                 <div className="pt-4 mt-auto">
-                                    <Button 
-                                        className="w-full md:w-auto min-w-[200px]" 
+                                    <Button
+                                        className="w-full md:w-auto min-w-[200px]"
                                         size="lg"
                                         onClick={() => {
                                             handleAddToCart(selectedViewService);

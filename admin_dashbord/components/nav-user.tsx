@@ -130,8 +130,8 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
 
             {/* Custom Dropdown Menu */}
             {dropdownOpen && (
-              <div 
-                className={`absolute ${dropUp ? 'bottom-full mb-2 slide-in-from-bottom-2' : 'top-full mt-2 slide-in-from-top-2'} left-0 right-0 sm:left-auto sm:right-0 sm:w-64 w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] animate-in fade-in duration-200`}
+              <div
+                className={`absolute ${dropUp ? 'bottom-full mb-2' : 'top-full mt-2'} right-0 w-64 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] animate-in fade-in duration-200`}
                 style={{
                   maxHeight: 'calc(100vh - 100px)',
                   overflowY: 'auto'
@@ -169,7 +169,7 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
                     <User className="h-4 w-4 mr-2" />
                     <span>My Profile</span>
                   </button>
-                  
+
                   <button
                     onClick={() => {
                       setDropdownOpen(false)
@@ -180,7 +180,7 @@ export function NavUser({ showFull = false, dropUp = true }: { showFull?: boolea
                     <Settings className="h-4 w-4 mr-2" />
                     <span>Settings</span>
                   </button>
-                  
+
                   <button
                     onClick={() => {
                       setDropdownOpen(false)

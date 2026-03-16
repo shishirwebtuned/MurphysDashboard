@@ -10,6 +10,13 @@
 !.yarn/releases
 !.yarn/versions
 
+# archives
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
 # testing
 /coverage
 

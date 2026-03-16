@@ -107,7 +107,7 @@ export function AppHeader({ onSearchChange, searchValue }: AppHeaderProps) {
 
           {/* Notification Button */}
           <button
-            onClick={() => router.push("/admin/contract_messages")}
+            onClick={() => router.push("/user/contract_messages")}
             aria-label="Notifications"
             className="
               hidden md:grid
@@ -144,7 +144,7 @@ export function AppHeader({ onSearchChange, searchValue }: AppHeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                aria-label="Settings"
+                aria-label="Change password"
                 className="
                   hidden md:grid
                   place-items-center
@@ -162,13 +162,13 @@ export function AppHeader({ onSearchChange, searchValue }: AppHeaderProps) {
               <DropdownMenuGroup>
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => router.push("/admin/change_password")}
+                  onClick={() => router.push("/user/change_password")}
                 >
                   Change password
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => router.push("/admin/delete_account")}
+                  onClick={() => router.push("/user/delete_account")}
                 >
                   Delete account
                 </DropdownMenuItem>
